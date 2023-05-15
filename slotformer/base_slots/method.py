@@ -11,9 +11,14 @@ from nerv.training import BaseMethod, CosineAnnealingWarmupRestarts
 from .models import cosine_anneal, get_lr, gumbel_softmax, make_one_hot, \
     to_rgb_from_tensor
 
+def to_rgb_from_tensor(x):
+    """Reverse the Normalize operation in torchvision."""
+    return (x * 0.5 + 0.5).clamp(0, 1)
 
+    
 def build_method(**kwargs):
     params = kwargs['params']
+    print(kwargs)
     if params.model == 'StoSAVi':
         return SAViMethod(**kwargs)
     elif params.model == 'dVAE':

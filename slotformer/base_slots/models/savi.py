@@ -73,13 +73,13 @@ class SlotAttention(nn.Module):
         assert len(slots.shape) == 3
 
         # Multiple rounds of attention.
-        for _ in range(self.num_iterations):
+        for _ in range(self.num_iterations): # num_iter = 1
             slots_prev = slots
 
             # Attention. Shape: [B, num_slots, slot_size].
             q = self.project_q(slots)
 
-            attn_logits = self.attn_scale * torch.einsum('bnc,bmc->bnm', k, q)
+            attn_logits = self.attn_scale * torch.einsum('bnc,bmc->bnm', k, q) # into 0-1 mask
             attn = F.softmax(attn_logits, dim=-1)
             # `attn` has shape: [B, num_inputs, num_slots].
 

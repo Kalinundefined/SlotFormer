@@ -39,10 +39,10 @@ def main(params):
         # soft link to save the weights in temp space for checkpointing
         # e.g. on our cluster, the temp dir is /checkpoint/$USR/$SLURM_JOB_ID/
         # TODO: modify this if you are not running on clusters
-        SLURM_JOB_ID = os.environ.get('SLURM_JOB_ID')
-        if SLURM_JOB_ID and not os.path.exists(ckp_path):
-            os.system(r'ln -s /checkpoint/{}/{}/ {}'.format(
-                pwd.getpwuid(os.getuid())[0], SLURM_JOB_ID, ckp_path))
+        SLURM_JOB_ID =  '0'#os.environ.get('SLURM_JOB_ID')
+        # if SLURM_JOB_ID and not os.path.exists(ckp_path):
+        #     os.system(r'ln -s /checkpoint/{}/{}/ {}'.format(
+        #         pwd.getpwuid(os.getuid())[0], SLURM_JOB_ID, ckp_path))
 
         # it's not good to hard-code the wandb id
         # but on preemption clusters, we want the job to resume the same wandb
@@ -74,19 +74,21 @@ def main(params):
 
     method.fit(
         resume_from=args.weight, san_check_val_step=params.san_check_val_step)
-
+    
+from dataclasses import dataclass
+@dataclass
+class Args:
+    ddp: bool = False
+    task: str = 'video_prediction'
+    params: str = '/home/jialin/repo23/NeuralSimulation/baselines/SlotFormer/slotformer/video_prediction/configs/slotformer_maniskill2.py'
+    fp16: bool= True    # half-precision
+    weight: str = ''    # load weight
+    cudnn: bool = True  # cudnn benchmark
+    local_rank: int = 0
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='SlotFormer training script')
-    parser.add_argument('--task', type=str, default='base_slots')
-    parser.add_argument('--params', type=str, required=True)
-    parser.add_argument('--weight', type=str, default='', help='load weight')
-    parser.add_argument('--fp16', action='store_true', help='half-precision')
-    parser.add_argument('--ddp', action='store_true', help='DDP training')
-    parser.add_argument('--cudnn', action='store_true', help='cudnn benchmark')
-    parser.add_argument('--local_rank', type=int, default=0)
-    args = parser.parse_args()
 
+    args = Args
     # import `build_dataset/model/method` function according to `args.task`
     print(f'INFO: training model in {args.task} task!')
     task = importlib.import_module(f'slotformer.{args.task}')

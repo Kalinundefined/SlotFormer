@@ -24,6 +24,7 @@ def extract_video_slots(model, dataset):
     # videos are long, so we use 1 video per GPU as 1 batch
     bs = torch.cuda.device_count()
     all_slots = []
+    print(dataset.num_videos)
     range_idx = range(0, dataset.num_videos, bs)
     for start_idx in tqdm(range_idx):
         end_idx = min(start_idx + bs, dataset.num_videos)
@@ -34,6 +35,7 @@ def extract_video_slots(model, dataset):
         slots = out_dict[slot_key].detach().cpu().numpy()  # [B, T, n, c]
         all_slots += [slot for slot in slots]
         torch.cuda.empty_cache()
+    
     all_slots = np.stack(all_slots, axis=0)  # [N, T, n, c]
     return all_slots
 

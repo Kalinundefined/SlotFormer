@@ -4,7 +4,7 @@ from .physion import build_physion_dataset, build_physion_slots_dataset, \
     build_physion_slots_label_dataset
 from .phyre import build_phyre_dataset, build_phyre_slots_dataset, \
     build_phyre_rollout_slots_dataset
-
+from .maniskill import build_maniskill_dataset, build_maniskill_slots_dataset
 
 def build_dataset(params, val_only=False):
     dst = params.dataset

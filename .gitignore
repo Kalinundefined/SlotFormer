@@ -1,5 +1,6 @@
 vis/
 wandb/
+data/maniskill
 data/OBJ3D
 data/CLEVRER
 data/Physion
